@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حضور و غیاب ویلا ۲۰۷</title>
+<meta name="theme-color" content="#1a3269">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="حضور ۲۰۷">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<script>
+/* ===== تنظیمات (فقط محمد) =====
+   آدرس Web App که از Apps Script گرفته‌اید را اینجا بگذارید.
+   اگر خالی بماند، صفحه در «حالت نمایشی» کار می‌کند و داده فقط روی همین گوشی می‌ماند. */
+window.API_URL = 'relay.php';
+</script>
+<style>
+@font-face{font-family:"Yekan Bakh";src:local("Yekan Bakh"),local("YekanBakh-Regular"),url(fonts/YekanBakh-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Yekan Bakh";src:local("Yekan Bakh Bold"),local("YekanBakh-Bold"),url(fonts/YekanBakh-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Vazirmatn";src:url(fonts/vazirmatn-arabic-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Vazirmatn";src:url(fonts/vazirmatn-arabic-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Vazirmatn";src:url(fonts/vazirmatn-arabic-800-normal.woff2) format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"Poppins";src:url(fonts/poppins-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Poppins";src:url(fonts/poppins-latin-600-normal.woff2) format("woff2");font-weight:600 800;font-display:swap}
+:root{
+  --navy:#1a3269;--green:#436659;--orange:#f7891b;--grey:#9e9e9e;
+  --bg:#f3f5f9;--card:#fff;--ink:#1b2333;--muted:#6b7280;--line:#e3e7ef;
+  --font:"Poppins","Yekan Bakh","Vazirmatn",Tahoma,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px}
+button{font-family:inherit;cursor:pointer;border:0}
+.hidden{display:none!important}
+
+header{background:var(--navy);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 16px 14px;position:sticky;top:0;z-index:5;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.hrow{display:flex;align-items:center;gap:12px}
+.hrow img{height:42px;width:auto;border-radius:6px}
+.htitle{flex:1;min-width:0}
+.htitle b{display:block;font-size:19px;font-weight:800}
+.htitle span{font-size:14px;opacity:.85}
+.clock{font-size:26px;font-weight:800;letter-spacing:.5px}
+.sync{display:flex;align-items:center;gap:6px;font-size:12.5px;opacity:.9;margin-top:6px}
+.dot{width:9px;height:9px;border-radius:50%;background:#7fd1a6}
+.dot.wait{background:var(--orange)}
+.dot.demo{background:var(--grey)}
+
+.banner{margin:12px 16px 0;padding:12px 14px;border-radius:14px;font-size:15px;display:flex;gap:10px;align-items:center}
+.banner.locked{background:#e6efeb;color:var(--green);font-weight:700}
+.banner.warn{background:#fff3e6;color:#8a4a07}
+.banner button{margin-inline-start:auto;background:var(--navy);color:#fff;border-radius:10px;padding:8px 12px;font-size:14px;font-weight:700;white-space:nowrap}
+
+main{padding:12px 16px 170px;max-width:640px;margin:0 auto}
+.worker{background:var(--card);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px rgba(16,24,40,.06)}
+.wtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.wname{font-size:21px;font-weight:800;color:var(--navy)}
+.whours{font-size:14px;color:var(--muted)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.st{min-height:72px;border-radius:14px;background:#fff;border:2px solid var(--line);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:17px;font-weight:700;padding:6px;transition:transform .08s}
+.st:active{transform:scale(.97)}
+.st svg{width:24px;height:24px}
+.st .t{font-size:24px;font-weight:800;line-height:1.1}
+.st.in{border-color:var(--green);color:var(--green)}
+.st.out{border-color:var(--navy);color:var(--navy)}
+.st.lunch{border-color:#c9ced8;color:#4b5563}
+.st.next{box-shadow:0 0 0 3px rgba(247,137,27,.35)}
+.st.done.in{background:var(--green);color:#fff}
+.st.done.out{background:var(--navy);color:#fff}
+.st.done.lunch{background:#5b6475;border-color:#5b6475;color:#fff}
+.st:disabled{opacity:1}
+.locked .st:not(.done){opacity:.45}
+
+.bar{position:fixed;inset:auto 0 0 0;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:6}
+.bar .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:8px}
+.big{min-height:60px;border-radius:16px;font-size:20px;font-weight:800;color:#fff;background:var(--green)}
+.big.navy{background:var(--navy)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sec{min-height:50px;border-radius:14px;font-size:16px;font-weight:700;background:#eef1f7;color:var(--navy)}
+
+/* پنجره‌ها */
+.sheet{position:fixed;inset:0;background:rgba(10,18,40,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.panel{background:#fff;width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 16px calc(18px + env(safe-area-inset-bottom))}
+.panel h2{margin:0 0 6px;font-size:21px;color:var(--navy)}
+.panel p{margin:6px 0 12px;color:var(--muted);font-size:15px;line-height:1.7}
+.panel .acts{display:grid;gap:8px;margin-top:14px}
+.panel input[type=time],.panel input[type=text],.panel select{width:100%;font:inherit;font-size:20px;padding:12px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.ghost{min-height:52px;border-radius:14px;font-size:17px;font-weight:700;background:#f1f3f7;color:#374151}
+.danger{min-height:52px;border-radius:14px;font-size:17px;font-weight:700;background:#fff;color:#b42318;border:2px solid #f3c7c3}
+.list{display:grid;gap:8px;margin:10px 0}
+.li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:12px;background:#f6f8fb;font-size:16px}
+.li b{color:var(--navy)}
+.li.bad{background:#fff3e6}
+.preview{width:100%;border-radius:12px;border:1px solid var(--line);display:block}
+.grp{border:2px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px}
+.grp b{color:var(--navy);font-size:18px}
+.grp .sub{color:var(--muted);font-size:14px;margin-top:4px;line-height:1.8}
+.weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0}
+.weeknav button{min-width:52px;min-height:44px;border-radius:12px;background:#eef1f7;color:var(--navy);font-size:20px;font-weight:800}
+.weeknav span{font-weight:700;text-align:center;flex:1}
+.toast{position:fixed;top:calc(env(safe-area-inset-top) + 90px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:15px;z-index:40;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 12px}
+.chip{flex:1 0 28%;min-height:54px;border-radius:12px;background:#eef1f7;color:var(--navy);font-size:21px;font-weight:800}
+.chip.on{background:var(--navy);color:#fff}
+.picker{display:flex;align-items:center;justify-content:center;gap:14px;direction:ltr;background:#f6f8fb;border-radius:16px;padding:10px}
+.pcol{display:flex;flex-direction:column;align-items:center;gap:4px}
+.pcol button{width:64px;height:56px;border-radius:12px;background:#fff;border:2px solid var(--line);color:var(--navy);font-size:30px;font-weight:800}
+.pcol small{color:var(--muted);font-size:13px}
+.pval{font-size:52px;font-weight:800;color:var(--navy);min-width:150px;text-align:center}
+.addlink{display:block;margin:6px auto 0;background:none;color:var(--muted);font-size:15px;padding:10px;text-decoration:underline}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <img src="icons/logo.svg" alt="">
+    <div class="htitle"><b>حضور و غیاب ویلا ۲۰۷</b><span id="dateLbl"></span></div>
+    <div class="clock" id="clock"></div>
+  </div>
+  <div class="sync"><span class="dot" id="syncDot"></span><span id="syncLbl"></span></div>
+</header>
+
+<div id="banners"></div>
+<main><div id="list"></div><button class="addlink" id="addBtn">+ افزودن نفر جدید</button></main>
+
+<div class="bar"><div class="in">
+  <button class="big" id="lockBtn">پایان و تایید روز</button>
+  <div class="row2">
+    <button class="sec" id="weekBtn">گزارش هفتگی</button>
+    <button class="sec" id="todayBtn">برگشت به امروز</button>
+  </div>
+</div></div>
+
+<div class="sheet hidden" id="sheet"><div class="panel" id="panel"></div></div>
+<canvas id="cv" class="hidden"></canvas>
+
+<script>
+'use strict';
+/* ---------- ابزار ---------- */
+const TZ = 'Asia/Tehran';
+const FIELDS = [
+  {k:'in',  label:'ورود',        cls:'in'},
+  {k:'ls',  label:'شروع ناهار',  cls:'lunch'},
+  {k:'le',  label:'پایان ناهار', cls:'lunch'},
+  {k:'out', label:'خروج',        cls:'out'},
+];
+const ICONS = {
+  in:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M4 12h11M11 8l4 4-4 4"/></svg>',
+  ls:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 0-3 2-3 5s1 4 3 4v9"/></svg>',
+  le:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l5 5L20 7"/></svg>',
+  out:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4"/><path d="M9 12h11M16 8l4 4-4 4"/></svg>',
+};
+const $ = s => document.querySelector(s);
+const fa = s => String(s).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* زمان: به ساعت و منطقه زمانی گوشی تکیه نمی‌کنیم.
+   اختلاف ساعت گوشی با سرور گوگل (S.skew) در هر تماس اندازه‌گیری می‌شود و همه زمان‌ها به وقت تهران محاسبه می‌شوند. */
+const nowD = () => new Date(Date.now() + ((typeof S === 'object' && S.skew) || 0));
+function tehranParts(d = nowD()){
+  const p = {};
+  new Intl.DateTimeFormat('en-GB',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'})
+    .formatToParts(d).forEach(x => p[x.type] = x.value);
+  return {date:`${p.year}-${p.month}-${p.day}`, hm:`${p.hour}:${p.minute}`, sec:p.second};
+}
+const todayKey = () => tehranParts().date;
+const nowHM = () => tehranParts().hm;
+// ذخیره به شکل ISO با آفست ثابت ایران: 2026-10-21T07:32:05+03:30
+const isoOf = (k, hm, sec = '00') => `${k}T${hm}:${sec}+03:30`;
+const isoNow = () => { const t = tehranParts(); return isoOf(t.date, t.hm, t.sec); };
+const hmOf = v => !v ? '' : (v.length > 5 ? v.slice(11, 16) : v);   // داده‌های قدیمی HH:MM هم پشتیبانی می‌شوند
+const keyToDate = k => new Date(k + 'T12:00:00Z');
+const addDays = (k, n) => { const d = keyToDate(k); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0,10); };
+const jalali = (k, opt) => new Intl.DateTimeFormat('fa-IR-u-ca-persian', Object.assign({timeZone:'UTC'}, opt)).format(keyToDate(k));
+const longDate = k => { const p = {}; new Intl.DateTimeFormat('fa-IR-u-ca-persian',{timeZone:'UTC',weekday:'long',day:'numeric',month:'long',year:'numeric'})
+  .formatToParts(keyToDate(k)).forEach(x => p[x.type] = x.value); return `${p.weekday} ${p.day} ${p.month} ${p.year}`; };
+const shortDate = k => jalali(k,{day:'numeric',month:'long'});
+const weekStart = k => addDays(k, -((keyToDate(k).getUTCDay() + 1) % 7)); // هفته از شنبه
+const toMin = v => { if(!v) return null; const [h,m] = hmOf(v).split(':').map(Number); return h*60+m; };
+
+function workedMin(r){
+  if(!r || !r.in || !r.out) return null;
+  let m = toMin(r.out) - toMin(r.in);
+  if(r.ls && r.le && toMin(r.le) > toMin(r.ls)) m -= toMin(r.le) - toMin(r.ls);
+  return Math.max(0, m);
+}
+const fmtDur = m => m == null ? '—' : fa(`${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`);
+const fmtHours = m => fa((Math.round(m/6)/10).toString()) + ' ساعت';
+
+/* ---------- ذخیره محلی ---------- */
+const LS = 'att207';
+let S;
+try { S = JSON.parse(localStorage.getItem(LS)) || {}; } catch(e){ S = {}; }
+S.workers ||= []; S.days ||= {}; S.queue ||= []; S.weeks ||= {};
+const save = () => { try { localStorage.setItem(LS, JSON.stringify(S)); } catch(e){} };
+
+const qs = new URLSearchParams(location.search);
+if(qs.get('k')){ S.key = qs.get('k'); save(); history.replaceState(null,'',location.pathname); }
+const DEMO = !window.API_URL;
+if(DEMO && !S.workers.length){
+  S.workers = ['علی','رضا','حسن','مهدی','استاد کریم'].map(n => ({name:n, payTo:n}));
+  save();
+}
+
+let view = todayKey();
+const day = k => (S.days[k] ||= {locked:false, rec:{}});
+const idOf = name => (S.workers.find(w => w.name === name) || {}).id || '';
+
+/* ---------- ارتباط با گوگل شیت ---------- */
+async function api(body, timeout = 15000){
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeout);
+  const t0 = Date.now();
+  try {
+    const res = await fetch(window.API_URL, {method:'POST', body:JSON.stringify(Object.assign({k:S.key||'', action:'att' + body.a[0].toUpperCase() + body.a.slice(1)}, body)),
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, signal:ctl.signal, redirect:'follow'});
+    const j = await res.json();
+    if(j.now){ S.skew = j.now - Math.round((t0 + Date.now()) / 2); save(); }
+    if(!j.ok) throw Object.assign(new Error(j.error||'error'), {server:true});
+    return j;
+  } finally { clearTimeout(t); }
+}
+function enqueue(op){ if(DEMO) return; S.queue.push(op); save(); flush(); }
+let flushing = false;
+async function flush(){
+  if(DEMO || flushing || !S.queue.length) return syncUI();
+  flushing = true; syncUI();
+  try {
+    while(S.queue.length){
+      try {
+        const j = await api(S.queue[0]), op = S.queue[0];
+        if(op.a === 'addWorker' && j.id){ const w = S.workers.find(x => x.name === op.name); if(w) w.id = j.id; }
+      }
+      catch(e){
+        if(e.server){ console.warn('rejected', S.queue[0], e.message); }   // سرور رد کرد (مثلاً روز قفل است): کنار بگذار
+        else break;                                                         // اینترنت نیست: بعداً
+      }
+      S.queue.shift(); save();
+    }
+  } finally { flushing = false; syncUI(); }
+}
+function syncUI(){
+  const d = $('#syncDot'), l = $('#syncLbl');
+  if(DEMO){ d.className='dot demo'; l.textContent='حالت نمایشی: داده فقط روی همین گوشی ذخیره می‌شود'; return; }
+  if(S.queue.length){ d.className='dot wait'; l.textContent = `${fa(S.queue.length)} مورد منتظر اینترنت. خودکار ارسال می‌شود`; }
+  else { d.className='dot'; l.textContent='همه‌چیز ذخیره شد'; }
+}
+async function loadConfig(){
+  if(DEMO) return;
+  try {
+    const j = await api({a:'config'}, 12000);
+    if(j.workers && j.workers.length){
+      // اگر اسم کسی در حسابداری عوض شده، ثبت‌های روی گوشی هم به اسم تازه منتقل شود
+      j.workers.forEach(w => { const old = S.workers.find(o => o.id && o.id === w.id && o.name !== w.name);
+        if(old) Object.values(S.days).forEach(d => { if(d.rec[old.name] && !d.rec[w.name]){ d.rec[w.name] = d.rec[old.name]; delete d.rec[old.name]; } }); });
+      S.workers = j.workers;
+    }
+    (j.locked||[]).forEach(k => { day(k).locked = true; });
+    save(); render();
+  } catch(e){ /* بدون اینترنت: از نسخه ذخیره‌شده استفاده می‌شود */ }
+}
+addEventListener('online', flush);
+setInterval(flush, 30000);
+
+/* ---------- نمایش ---------- */
+function render(){
+  $('#clock').textContent = fa(nowHM());
+  const d = day(view), locked = d.locked, isToday = view === todayKey();
+  $('#dateLbl').textContent = longDate(view) + (isToday ? '' : ' (روز گذشته)');
+  $('#todayBtn').classList.toggle('hidden', isToday);
+  $('#weekBtn').parentElement.style.gridTemplateColumns = isToday ? '1fr' : '1fr 1fr';
+  $('#lockBtn').textContent = locked ? 'ارسال دوباره گزارش این روز' : 'پایان و تایید روز';
+  $('#lockBtn').classList.toggle('navy', locked);
+  $('#addBtn').classList.toggle('hidden', locked);
+
+  // بنرها
+  let b = '';
+  if(locked) b += `<div class="banner locked">✓ این روز تایید و قفل شده است و قابل تغییر نیست.</div>`;
+  const pending = Object.keys(S.days).filter(k => k < todayKey() && k !== view && !S.days[k].locked && Object.keys(S.days[k].rec).length).sort();
+  pending.forEach(k => b += `<div class="banner warn">روز ${esc(shortDate(k))} هنوز تایید نشده است.<button data-goto="${k}">باز کردن</button></div>`);
+  $('#banners').innerHTML = b;
+
+  const list = $('#list');
+  list.className = locked ? 'locked' : '';
+  list.innerHTML = S.workers.map((w, i) => {
+    const r = d.rec[w.name] || {};
+    const next = locked ? null : FIELDS.find(f => !r[f.k])?.k;
+    const wm = workedMin(r);
+    return `<section class="worker">
+      <div class="wtop"><div class="wname">${esc(w.name)}</div><div class="whours">${wm!=null ? 'کارکرد: ' + fmtDur(wm) : (r.in ? 'سر کار' : '')}</div></div>
+      <div class="btns">${FIELDS.map(f => `<button class="st ${f.cls}${r[f.k]?' done':''}${f.k===next?' next':''}" data-i="${i}" data-f="${f.k}">
+        ${r[f.k] ? `<span>${f.label}</span><span class="t">${fa(hmOf(r[f.k]))}</span>` : `${ICONS[f.k]}<span>${f.label}</span>`}
+      </button>`).join('')}</div></section>`;
+  }).join('') || '<p style="text-align:center;color:var(--muted)">هنوز نامی ثبت نشده است.</p>';
+}
+
+function tick(){
+  $('#clock').textContent = fa(nowHM());
+  if(view !== todayKey() && !Object.keys(day(view).rec).length) { view = todayKey(); render(); }
+}
+
+/* ---------- ثبت ساعت ---------- */
+function setStamp(name, f, hm){
+  const d = day(view); if(d.locked) return;
+  const r = d.rec[name] ||= {};
+  if(hm) r[f] = hm; else delete r[f];
+  save(); render();
+  enqueue({a:'stamp', date:view, name, id:idOf(name), field:f, value:hm||''});
+}
+$('#list').addEventListener('click', e => {
+  const b = e.target.closest('.st'); if(!b) return;
+  const w = S.workers[+b.dataset.i], f = b.dataset.f, lbl = FIELDS.find(x => x.k===f).label;
+  const d = day(view);
+  if(d.locked){ toast('این روز قفل شده است'); return; }
+  const cur = (d.rec[w.name]||{})[f];
+  if(!cur){
+    if(view !== todayKey()){ return editStamp(w, f, lbl, ''); }
+    setStamp(w.name, f, isoNow());
+    navigator.vibrate?.(30);
+    toast(`${lbl} ${w.name}: ${fa(nowHM())}`);
+  } else editStamp(w, f, lbl, hmOf(cur));
+});
+/* انتخاب ساعت ساده: چند ساعت آماده + دکمه‌های بزرگ کم و زیاد (بدون صفحه‌کلید و ساعت‌چرخان) */
+const PRESETS = {in:['06:30','07:00','07:30','08:00','08:30'], ls:['12:00','12:30','13:00'], le:['12:30','13:00','13:30','14:00'], out:['16:00','16:30','17:00','17:30','18:00']};
+function editStamp(w, f, lbl, cur){
+  let m = toMin(cur || nowHM());
+  const hm = () => `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+  openSheet(`<h2>${esc(lbl)} – ${esc(w.name)}</h2>
+    <p>${cur ? `ساعت ثبت‌شده: <b>${fa(cur)}</b>. اگر اشتباه است، ساعت درست را بزنید.` : 'ساعت را بزنید.'}</p>
+    <div class="chips">${PRESETS[f].map(p => `<button class="chip" data-p="${p}">${fa(p)}</button>`).join('')}</div>
+    <div class="picker">
+      <div class="pcol"><button data-d="60">+</button><small>ساعت</small><button data-d="-60">−</button></div>
+      <div class="pval" id="tVal"></div>
+      <div class="pcol"><button data-d="5">+</button><small>دقیقه</small><button data-d="-5">−</button></div>
+    </div>
+    <div class="acts">
+      <button class="big" id="tSave"></button>
+      ${cur ? '<button class="danger" id="tDel">پاک کردن این ساعت</button>' : ''}
+      <button class="ghost" data-close>انصراف</button>
+    </div>`);
+  const show = () => {
+    $('#tVal').textContent = fa(hm()); $('#tSave').textContent = `ذخیره ساعت ${fa(hm())}`;
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.p === hm()));
+  };
+  $('#panel').onclick = e => {
+    const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.p){ m = toMin(b.dataset.p); show(); }
+    if(b.dataset.d){ m = (m + +b.dataset.d + 1440) % 1440; if(Math.abs(+b.dataset.d) === 5) m = Math.round(m/5)*5 % 1440; show(); }
+  };
+  show();
+  $('#tSave').onclick = () => { setStamp(w.name, f, isoOf(view, hm())); closeSheet(); };
+  if(cur) $('#tDel').onclick = () => { setStamp(w.name, f, ''); closeSheet(); };
+}
+
+/* ---------- افزودن نفر ---------- */
+$('#addBtn').onclick = () => {
+  openSheet(`<h2>افزودن نفر جدید</h2><p>نام را بنویسید.</p>
+    <input type="text" id="nIn" autocomplete="off">
+    <div class="acts"><button class="big" id="nSave">افزودن</button><button class="ghost" data-close>انصراف</button></div>`);
+  setTimeout(() => $('#nIn').focus(), 100);
+  $('#nSave').onclick = () => {
+    const n = $('#nIn').value.trim().replace(/\s+/g,' ');
+    if(!n) return;
+    if(S.workers.some(w => w.name === n)){ toast('این نام از قبل هست'); return; }
+    S.workers.push({name:n, payTo:n}); save(); render(); closeSheet();
+    enqueue({a:'addWorker', name:n});
+  };
+};
+
+/* ---------- تایید روز ---------- */
+$('#lockBtn').onclick = () => {
+  const d = day(view);
+  if(d.locked) return showDayReport(view);
+  const present = S.workers.filter(w => (d.rec[w.name]||{}).in);
+  const absent = S.workers.filter(w => !(d.rec[w.name]||{}).in);
+  const noOut = present.filter(w => !d.rec[w.name].out);
+  const lunchOpen = present.filter(w => d.rec[w.name].ls && !d.rec[w.name].le);
+  openSheet(`<h2>پایان و تایید روز</h2>
+    <p>${esc(longDate(view))}<br>بعد از تایید، ساعت‌های این روز <b>قفل</b> می‌شوند و دیگر قابل تغییر نیستند.</p>
+    <div class="list">
+      <div class="li"><span>حاضر</span><b>${fa(present.length)} نفر</b></div>
+      <div class="li"><span>غایب</span><b>${fa(absent.length)} نفر</b></div>
+      ${noOut.length ? `<div class="li bad"><span>خروج ثبت نشده: ${noOut.map(w=>esc(w.name)).join('، ')}</span></div>` : ''}
+      ${lunchOpen.length ? `<div class="li bad"><span>پایان ناهار ثبت نشده: ${lunchOpen.map(w=>esc(w.name)).join('، ')}</span></div>` : ''}
+    </div>
+    <div class="acts">
+      ${noOut.length && view===todayKey() ? `<button class="big navy" id="lkFill">ثبت خروج ساعت ${fa(nowHM())} برای این ${fa(noOut.length)} نفر و تایید</button>` : ''}
+      <button class="big" id="lkGo">${noOut.length ? 'همین‌طور تایید شود' : 'تایید نهایی'}</button>
+      <button class="ghost" data-close>برگشت و اصلاح</button>
+    </div>`);
+  const go = fill => {
+    if(fill){ const t = isoNow(); noOut.forEach(w => setStamp(w.name, 'out', t)); }
+    d.locked = true; d.lockedAt = isoNow(); save(); render();
+    const rows = S.workers.map(w => Object.assign({name:w.name, id:w.id||''}, d.rec[w.name]||{}));
+    enqueue({a:'lock', date:view, lockedAt:d.lockedAt, rows});
+    showDayReport(view);
+  };
+  if($('#lkFill')) $('#lkFill').onclick = () => go(true);
+  $('#lkGo').onclick = () => go(false);
+};
+
+/* ---------- گزارش تصویری ---------- */
+const logo = new Image(); logo.src = 'icons/logo.svg';
+const FONT = '"Yekan Bakh","Vazirmatn","Poppins",Tahoma,sans-serif';
+
+function drawTable({title, subtitle, head, widths, rows, footer, rowStyle}){
+  const W = 1080, M = 40, HEAD = 210, TH = 72, RH = 78, FOOT = 120;
+  const cv = $('#cv'), H = HEAD + TH + RH*Math.max(rows.length,1) + FOOT;
+  cv.width = W; cv.height = H;
+  const c = cv.getContext('2d');
+  c.direction = 'rtl';
+  c.fillStyle = '#fff'; c.fillRect(0,0,W,H);
+  // سربرگ
+  c.fillStyle = '#1a3269'; c.fillRect(0,0,W,HEAD);
+  if(logo.complete && logo.naturalWidth) c.drawImage(logo, M, 30, 152, 150);
+  c.fillStyle = '#fff'; c.textAlign = 'right'; c.textBaseline = 'middle';
+  c.font = `800 46px ${FONT}`; c.fillText(title, W-M, 80);
+  c.font = `400 30px ${FONT}`; c.fillStyle = 'rgba(255,255,255,.85)'; c.fillText(subtitle, W-M, 140);
+  c.fillStyle = '#f7891b'; c.fillRect(W-M-90, 176, 90, 6);
+  // سرستون
+  const total = widths.reduce((a,b)=>a+b,0), scale = (W-2*M)/total;
+  const xs = []; let x = W-M; widths.forEach(w => { xs.push([x - w*scale, w*scale]); x -= w*scale; });
+  let y = HEAD;
+  c.fillStyle = '#436659'; c.fillRect(M, y, W-2*M, TH);
+  c.fillStyle = '#fff'; c.font = `700 27px ${FONT}`; c.textAlign = 'center';
+  head.forEach((h,i) => c.fillText(h, xs[i][0]+xs[i][1]/2, y+TH/2));
+  y += TH;
+  rows.forEach((r, ri) => {
+    const st = rowStyle ? rowStyle(r, ri) : {};
+    c.fillStyle = st.bg || (ri%2 ? '#f6f8fb' : '#fff'); c.fillRect(M, y, W-2*M, RH);
+    r.forEach((v,i) => {
+      c.fillStyle = i===0 ? '#1a3269' : (st.ink || '#1b2333');
+      c.font = `${i===0 || i===r.length-1 ? 800 : 400} ${i===0 ? 30 : 29}px ${FONT}`;
+      c.textAlign = i===0 ? 'right' : 'center';
+      c.fillText(v, i===0 ? xs[i][0]+xs[i][1]-18 : xs[i][0]+xs[i][1]/2, y+RH/2+2);
+    });
+    c.fillStyle = '#e3e7ef'; c.fillRect(M, y+RH-1, W-2*M, 1);
+    y += RH;
+  });
+  // پانویس
+  c.textAlign = 'right'; c.fillStyle = '#4b5563'; c.font = `400 25px ${FONT}`;
+  c.fillText(footer, W-M, y+48);
+  c.direction = 'ltr'; c.textAlign = 'left'; c.fillStyle = '#9e9e9e'; c.font = `400 22px "Poppins",sans-serif`;
+  c.fillText('∞ HashemolHosseini', M, y+48);
+  c.direction = 'rtl';
+  return cv;
+}
+
+async function canvasFile(cv, name){
+  const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+  return new File([blob], name, {type:'image/png'});
+}
+
+async function showDayReport(k){
+  await document.fonts.ready; if(!logo.complete) await new Promise(r => { logo.onload = logo.onerror = r; });
+  const d = day(k);
+  let sum = 0, present = 0;
+  const rows = S.workers.map(w => {
+    const r = d.rec[w.name] || {};
+    const m = workedMin(r); if(m) sum += m; if(r.in) present++;
+    return [w.name, ...FIELDS.map(f => r[f.k] ? fa(hmOf(r[f.k])) : '—'), r.in ? (r.out ? fmtDur(m) : 'بدون خروج') : 'غایب'];
+  });
+  const cv = drawTable({
+    title:'گزارش حضور و غیاب ویلا ۲۰۷', subtitle: longDate(k),
+    head:['نام','ورود','شروع ناهار','پایان ناهار','خروج','کارکرد'], widths:[260,140,160,160,140,150], rows,
+    rowStyle: r => r[5]==='غایب' ? {ink:'#9e9e9e'} : {},
+    footer:`حاضر: ${fa(present)} نفر  |  جمع کارکرد: ${fmtDur(sum)}  |  تایید ساعت ${fa(hmOf(d.lockedAt)||nowHM())}`,
+  });
+  const file = await canvasFile(cv, `hozur-${k}.png`);
+  shareSheet('گزارش روز آماده است', 'دکمه سبز را بزنید و «روبیکا» را انتخاب کنید، سپس گروه کارگاه را بزنید.', cv, file,
+    `گزارش حضور و غیاب ویلا ۲۰۷ — ${longDate(k)}`);
+}
+
+function shareSheet(title, hint, cv, file, text){
+  const url = cv.toDataURL('image/png');
+  const canShare = navigator.canShare && navigator.canShare({files:[file]});
+  openSheet(`<h2>${esc(title)}</h2><p>${esc(canShare ? hint : 'روی تصویر انگشت را نگه دارید و «ذخیره» یا «اشتراک‌گذاری» را بزنید، یا دکمه دانلود را بزنید.')}</p>
+    <img class="preview" src="${url}" alt="">
+    <div class="acts">
+      ${canShare ? '<button class="big" id="shGo">ارسال گزارش (روبیکا و…)</button>' : `<a class="big" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="${url}" download="${esc(file.name)}">دانلود تصویر</a>`}
+      <button class="ghost" data-close>بستن</button>
+    </div>`);
+  if(canShare) $('#shGo').onclick = async () => {
+    try { await navigator.share({files:[file], title:text, text}); } catch(e){ if(e.name !== 'AbortError') toast('ارسال انجام نشد، دوباره بزنید'); }
+  };
+}
+
+/* ---------- گزارش هفتگی ---------- */
+let wk = weekStart(todayKey());
+$('#weekBtn').onclick = () => { wk = weekStart(view); openWeek(); };
+
+async function weekData(start){
+  const days = [...Array(7)].map((_,i) => addDays(start, i));
+  const data = {};
+  days.forEach(k => { if(S.days[k]) data[k] = S.days[k].rec; });
+  if(!DEMO){
+    try {
+      const j = await api({a:'week', start}, 12000);
+      Object.entries(j.days||{}).forEach(([k, rec]) => { data[k] = Object.assign({}, rec, data[k]||{}); });
+      if(j.final) S.weeks[start] = Object.assign(S.weeks[start]||{}, {final:true, groups:j.final});
+    } catch(e){}
+  }
+  const totals = {};
+  const names = new Set(S.workers.map(w => w.name));
+  Object.values(data).forEach(rec => Object.keys(rec).forEach(n => names.add(n)));
+  names.forEach(n => totals[n] = {name:n, min:0, days:0, open:0});
+  Object.values(data).forEach(rec => Object.entries(rec).forEach(([n, r]) => {
+    const m = workedMin(r);
+    if(m != null){ totals[n].min += m; totals[n].days++; } else if(r.in) totals[n].open++;
+  }));
+  return {days, list:Object.values(totals).filter(t => t.days || t.open || S.workers.some(w=>w.name===t.name))};
+}
+const weekLabel = s => `${shortDate(s)} تا ${shortDate(addDays(s,6))}`;
+
+async function openWeek(){
+  openSheet(`<h2>گزارش هفتگی</h2><p>در حال آماده‌سازی…</p>`);
+  const {list} = await weekData(wk);
+  const fin = S.weeks[wk]?.final;
+  const thisWeek = wk === weekStart(todayKey());
+  openSheet(`<h2>گزارش هفتگی</h2>
+    <div class="weeknav"><button id="wPrev">‹</button><span>${esc(weekLabel(wk))}</span><button id="wNext" ${thisWeek?'disabled style="opacity:.3"':''}>›</button></div>
+    <div class="list">${list.map(t => `<div class="li${t.open?' bad':''}"><span><b>${esc(t.name)}</b><br><small>${fa(t.days)} روز${t.open?`، ${fa(t.open)} روز بدون خروج`:''}</small></span><b>${fmtHours(t.min)}</b></div>`).join('')}</div>
+    ${fin ? '<p>✓ این هفته قبلاً نهایی شده است. با نهایی کردن دوباره، گروه‌بندی جدید جایگزین می‌شود.</p>' : ''}
+    <div class="acts">
+      <button class="big" id="wGo">گروه‌بندی پرداخت و نهایی کردن</button>
+      <button class="ghost" data-close>بستن</button>
+    </div>`);
+  $('#wPrev').onclick = () => { wk = addDays(wk,-7); openWeek(); };
+  $('#wNext').onclick = () => { if(!thisWeek){ wk = addDays(wk,7); openWeek(); } };
+  $('#wGo').onclick = () => openGrouping(list);
+}
+
+function openGrouping(list){
+  const names = list.map(t => t.name);
+  const def = n => { const w = S.workers.find(x => x.name===n); const p = (w && w.payTo) || n; return names.includes(p) ? p : n; };
+  const opts = sel => names.map(n => `<option ${n===sel?'selected':''}>${esc(n)}</option>`).join('');
+  openSheet(`<h2>دستمزد هر نفر به حساب چه کسی؟</h2>
+    <p>پیش‌فرض آماده است. اگر درست است، فقط «تایید» را بزنید. برای تغییر، اسم صاحب حساب را عوض کنید.</p>
+    <div class="list">${list.map((t,i) => `<div class="li" style="display:block"><b>${esc(t.name)}</b> <small>(${fmtHours(t.min)})</small>
+      <div style="margin-top:6px;display:flex;align-items:center;gap:8px"><span style="white-space:nowrap">واریز به:</span><select data-g="${i}">${opts(def(t.name))}</select></div></div>`).join('')}</div>
+    <div class="acts"><button class="big" id="gGo">تایید گروه‌بندی</button><button class="ghost" id="gBack">برگشت</button></div>`);
+  $('#gBack').onclick = openWeek;
+  $('#gGo').onclick = () => {
+    const pay = {}; document.querySelectorAll('[data-g]').forEach(s => pay[list[+s.dataset.g].name] = s.value);
+    // گروه‌بندی
+    const groups = {};
+    list.forEach(t => { const p = pay[t.name]; (groups[p] ||= {payTo:p, min:0, members:[]}); groups[p].min += t.min; groups[p].members.push({name:t.name, min:t.min, days:t.days}); });
+    const G = Object.values(groups).filter(g => g.min > 0 || g.members.length > 1);
+    openSheet(`<h2>خلاصه پرداخت</h2><p>${esc(weekLabel(wk))}</p>
+      ${G.map(g => `<div class="grp"><b>به حساب ${esc(g.payTo)}: ${fmtHours(g.min)}</b>
+        <div class="sub">${g.members.map(m => `${esc(m.name)}: ${fmtHours(m.min)}`).join('، ')}</div></div>`).join('')}
+      <div class="acts"><button class="big" id="fGo">نهایی کردن گزارش هفته</button><button class="ghost" id="fBack">برگشت و اصلاح</button></div>`);
+    $('#fBack').onclick = () => openGrouping(list);
+    $('#fGo').onclick = async () => {
+      S.workers.forEach(w => { if(pay[w.name]) w.payTo = pay[w.name]; });
+      S.weeks[wk] = {final:true, groups:G}; save();
+      enqueue({a:'finalizeWeek', start:wk, end:addDays(wk,6),
+        rows:list.map(t => ({name:t.name, id:idOf(t.name), days:t.days, minutes:t.min, payTo:pay[t.name]}))});
+      await document.fonts.ready;
+      const rows = [];
+      G.forEach(g => g.members.forEach((m, i) => rows.push([m.name, fa(m.days), fmtHours(m.min), pay[m.name], i===0 ? fmtHours(g.min) : ''])));
+      const cv = drawTable({
+        title:'گزارش هفتگی ویلا ۲۰۷', subtitle: weekLabel(wk) + ' ' + jalali(wk,{year:'numeric'}),
+        head:['نام','روز کار','ساعت کار','واریز به','جمع واریز'], widths:[240,120,180,240,200], rows,
+        rowStyle: r => r[4] ? {} : {bg:'#fbfcfe'},
+        footer:`جمع کل: ${fmtHours(list.reduce((a,t)=>a+t.min,0))}  |  ${fa(G.length)} واریز`,
+      });
+      const file = await canvasFile(cv, `hafte-${wk}.png`);
+      shareSheet('گزارش هفته نهایی شد', 'دکمه سبز را بزنید و برنامه مورد نظر را انتخاب کنید.', cv, file, `گزارش هفتگی ویلا ۲۰۷ — ${weekLabel(wk)}`);
+    };
+  };
+}
+
+/* ---------- پنجره و پیام ---------- */
+function openSheet(html){ $('#panel').onclick = null; $('#panel').innerHTML = html; $('#sheet').classList.remove('hidden'); $('#panel').scrollTop = 0; }
+function closeSheet(){ $('#sheet').classList.add('hidden'); }
+$('#sheet').addEventListener('click', e => { if(e.target.id==='sheet' || e.target.hasAttribute('data-close')) closeSheet(); });
+let tt; function toast(m){ let t = $('.toast'); if(!t){ t = document.createElement('div'); t.className='toast'; document.body.append(t); } t.textContent = fa(m); clearTimeout(tt); tt = setTimeout(() => t.remove(), 1800); }
+$('#banners').addEventListener('click', e => { const g = e.target.dataset.goto; if(g){ view = g; render(); scrollTo(0,0); } });
+$('#todayBtn').onclick = () => { view = todayKey(); render(); };
+
+/* ---------- شروع ---------- */
+render(); tick(); syncUI(); setInterval(tick, 10000);
+loadConfig().then(flush);
+if('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
